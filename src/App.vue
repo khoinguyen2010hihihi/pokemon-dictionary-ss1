@@ -1,12 +1,17 @@
 <script setup>
 import { ref, computed } from 'vue'
 import PokemonCard from './components/PokemonCard.vue'
+import PokemonPopup from './components/PokemonPopup.vue';
 import { fetchAPI, getIDPokemon } from '../utils/index.js'
 
 let pokemons = [];
 const offset = ref(0);
 const NUMBER_OF_RENDER = 36;
 const filteredPokemons = ref([]);
+const selectedPokemon = ref(null);
+const pokemonTypes = ref([]);
+const flavorText = ref('');
+const pokemonDetails = ref(null);
 
 const renderPokemons = computed(() => filteredPokemons.value.slice(0, offset.value + NUMBER_OF_RENDER));
 
@@ -28,10 +33,87 @@ function handleSearch(event) {
   });
   offset.value = 0;
 }
+
+const getPokemonTypes = async (url) => {
+  const data = await fetchAPI(url)
+  return data.types.map(typeInfo => typeInfo.type.name)
+}
+
+const getFlavorText = async (pokemonName) => {
+  const data = await fetchAPI(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`)
+  const englishText = data.flavor_text_entries.find(entry => entry.language.name === 'en');
+  return englishText ? englishText.flavor_text : '';
+}
+
+const getPokemonDetails = async (url) => {
+  const data = await fetchAPI(url);
+  return {
+    height: data.height,
+    weight: data.weight,
+    abilities: data.abilities.map(ability => ability.ability.name),
+    stats: data.stats.map(stat => ({
+      name: stat.stat.name,
+      value: stat.base_stat
+    }))
+  };
+}
+
+const getEvolutionChain = async (pokemonName) => {
+  const speciesData = await fetchAPI(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
+  const evolutionChainUrl = speciesData.evolution_chain.url;
+  const evolutionChainData = await fetchAPI(evolutionChainUrl);
+  return evolutionChainData;
+}
+
+async function handlePokemonClick(pokemon) {
+  selectedPokemon.value = pokemon;
+  pokemonTypes.value = await getPokemonTypes(pokemon.url);
+  flavorText.value = await getFlavorText(pokemon.name);
+  pokemonDetails.value = await getPokemonDetails(pokemon.url);
+  const evolutionChain = await getEvolutionChain(pokemon.name);
+  selectedPokemon.value.evolutionChain = extractEvolutionChain(evolutionChain.chain);
+}
+
+function extractEvolutionChain(chain) {
+  const evolutionChain = [];
+  let currentStage = chain;
+
+  while(currentStage) {
+    evolutionChain.push({
+      name: currentStage.species.name,
+      url: currentStage.species.url
+    });
+
+    if(currentStage.evolves_to.length > 0) {
+      currentStage = currentStage.evolves_to[0];
+    } else {
+      currentStage = null;
+    }
+  }
+
+  return evolutionChain;
+}
+
+function handleBackClick() {
+  selectedPokemon.value = null;
+  pokemonTypes.value = [];
+  flavorText.value = '';
+  pokemonDetails.value = null;
+}
 </script>
 
 <template>
   <div class="container">
+    <PokemonPopup
+      v-if="selectedPokemon"
+      :selectedPokemon="selectedPokemon"
+      :pokemonId="getIDPokemon(selectedPokemon.url)"
+      :pokemonTypes="pokemonTypes"
+      :flavorText="flavorText"
+      :pokemonDetails="pokemonDetails"
+      @back="handleBackClick"
+    />
+
     <!-- Title Section -->
     <div class="title">
       <p class="title__main">Pokemon API</p>
@@ -44,6 +126,7 @@ function handleSearch(event) {
         :key="item.name"
         :pokemon="item"
         :pokemonId="getIDPokemon(item.url)"
+        @click="handlePokemonClick(item)"
       />
     </div>
 

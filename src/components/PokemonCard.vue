@@ -1,8 +1,22 @@
 <script setup>
-  defineProps({
-    pokemon: Object,
-    pokemonId: Number
-  })
+import { fetchAPI } from '../../utils';
+import { ref, onMounted } from 'vue';
+
+const props = defineProps({
+  pokemon: Object,
+  pokemonId: Number
+})
+
+const pokemonTypes = ref([])
+
+const getPokemonTypes = async (url) => {
+  const data = await fetchAPI(url)
+  return data.types.map(typeInfo => typeInfo.type.name)
+}
+
+onMounted(async () => {
+  pokemonTypes.value = await getPokemonTypes(props.pokemon.url)
+})
 </script>
 
 <template>
@@ -15,6 +29,12 @@
     </div>
     <div class="item__name">
       {{ pokemon.name }}
+    </div>
+
+    <div class="pokemon-types">
+      <div v-for="type in pokemonTypes" :key="type" :class="['pokemon-type', type]">
+        {{ type }}
+      </div>
     </div>
   </div>
 </template>
@@ -61,5 +81,95 @@
   line-height: 28.08px;
   text-align: center;
   text-transform: capitalize;
+}
+
+.pokemon-types {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pokemon-type {
+  font-size: 13px;
+  border-radius: 5px;
+  font-weight: 500;
+  line-height: 20.8px;
+  margin: 4px 3px;
+  padding: 3px 4px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.normal {
+  background-color: #a8a77a;
+}
+
+.fire {
+  background-color: #ff421c;
+}
+
+.water {
+  background-color: #6390f0;
+}
+
+.grass {
+  background-color: #78cd54;
+}
+
+.electric {
+  background-color: #f7d02c;
+}
+
+.ice {
+  background-color: #96d9d6;
+}
+
+.fighting {
+  background-color: #c22e28;
+}
+
+.poison {
+  background-color: #a33ea1;
+}
+
+.ground {
+  background-color: #e2bf65;
+}
+
+.flying {
+  background-color: #a98ff3;
+}
+
+.psychic {
+  background-color: #f95587;
+}
+
+.bug {
+  background-color: #a6b91a;
+}
+
+.rock {
+  background-color: #b6a136;
+}
+
+.ghost {
+  background-color: #735797;
+}
+
+.dragon {
+  background-color: #6f35fc;
+}
+
+.dark {
+  background-color: #705746;
+}
+
+.steel {
+  background-color: #b7b7ce;
+}
+
+.fairy {
+  background-color: #d685ad;
 }
 </style>
