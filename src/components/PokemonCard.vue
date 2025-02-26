@@ -5,18 +5,18 @@ import { ref, onMounted } from 'vue';
 const props = defineProps({
   pokemon: Object,
   pokemonId: Number
-})
+});
 
-const pokemonTypes = ref([])
+const pokemonTypes = ref([]);
 
 const getPokemonTypes = async (url) => {
-  const data = await fetchAPI(url)
-  return data.types.map(typeInfo => typeInfo.type.name)
-}
+  const data = await fetchAPI(url);
+  return data.types.map(typeInfo => typeInfo.type.name);
+};
 
 onMounted(async () => {
-  pokemonTypes.value = await getPokemonTypes(props.pokemon.url)
-})
+  pokemonTypes.value = await getPokemonTypes(props.pokemon.url);
+});
 </script>
 
 <template>
@@ -28,7 +28,7 @@ onMounted(async () => {
       :style="`background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png')`">
     </div>
     <div class="item__name">
-      {{ pokemon.name }}
+      <router-link :to="{ name: 'PokemonDetail', params: { name: pokemon.name } }">{{ pokemon.name }}</router-link>
     </div>
 
     <div class="pokemon-types">

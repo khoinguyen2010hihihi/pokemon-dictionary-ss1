@@ -1,6 +1,27 @@
-import './assets/main.css'
+import './assets/main.css';
+import { createApp } from 'vue';
+import App from './App.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from './views/HomeView.vue';
+import PokemonDetail from './components/PokemonDetail.vue';
 
-import { createApp } from 'vue'
-import App from './App.vue'
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: HomeView,
+  },
+  {
+    path: '/:name',
+    name: 'PokemonDetail',
+    component: PokemonDetail,
+    props: true,
+  },
+];
 
-createApp(App).mount('#app')
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+createApp(App).use(router).mount('#app');
