@@ -28,7 +28,7 @@ onMounted(async () => {
       :style="`background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png')`">
     </div>
     <div class="item__name">
-      <router-link :to="{ name: 'PokemonDetail', params: { name: pokemon.name } }">{{ pokemon.name }}</router-link>
+      <router-link :to="{ name: 'PokemonDetail', params: { name: pokemon.name } }" class="item__name">{{ pokemon.name }}</router-link>
     </div>
 
     <div class="pokemon-types">
@@ -81,6 +81,7 @@ onMounted(async () => {
   line-height: 28.08px;
   text-align: center;
   text-transform: capitalize;
+  color: #000
 }
 
 .pokemon-types {

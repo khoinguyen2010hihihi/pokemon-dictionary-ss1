@@ -83,7 +83,7 @@ function handleBackClick() {
     <div class="wrapper">
       <button class="back-btn" @click="handleBackClick">Back</button>
 
-      <div v-if="loading" class="loading">Loading...</div>
+      <div v-if="loading" class="loading">Getting data from PokéDex...</div>
       <div v-else class="wrapper__content">
         <div class="col-full">
           <div
@@ -420,5 +420,13 @@ function handleBackClick() {
   font-weight: 600;
   text-align: center;
   text-transform: capitalize;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 20px;
 }
 </style>
