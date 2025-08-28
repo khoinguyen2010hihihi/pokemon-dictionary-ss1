@@ -36,4 +36,4 @@ npm run lint
 "# PokemonFinal" 
 "# PokemonFinalofFinal" 
 ``` Deloy:
-[http://localhost:5173/c](https://pokemon-final-sooty.vercel.app/)
+(https://pokemon-final-sooty.vercel.app/)
